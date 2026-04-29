@@ -8,25 +8,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingBottom="20dp">
-
-        <EditText
-            android:id="@+id/edit_search"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_margin="16dp"
-            android:background="@drawable/custom_score_bg"
-            android:hint="Film veya dizi ara..."
-            android:paddingStart="16dp"
-            android:textColor="#FFFFFF"
-            android:textColorHint="#888888"
-            android:imeOptions="actionSearch"
-            android:inputType="text" />
+        android:paddingBottom="20dp"
+        android:paddingTop="16dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Popüler Filmler / Sonuçlar"
+            android:text="Popüler Filmler"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
             android:textStyle="bold"

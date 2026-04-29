@@ -19,38 +19,21 @@ public class Movie {
     @SerializedName("vote_average")
     private double voteAverage;
 
-    // 1. BOŞ CONSTRUCTOR (Retrofit/API için şart)
-    public Movie() {
-    }
+    @SerializedName("imdb_id") // YENİ EKLENDİ
+    private String imdbId;
 
-    // 2. ÜÇ PARAMETRELİ CONSTRUCTOR (Senin elinle eklediğin oyunlar için şart!)
-    // Hatanın çözümü tam olarak bu metottur:
+    public Movie() {}
+
     public Movie(String title, String posterPath, double voteAverage) {
         this.title = title;
         this.posterPath = posterPath;
         this.voteAverage = voteAverage;
     }
 
-    // GETTER METOTLARI
-    public int getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        // Eğer title doluysa (film), değilse name (dizi) döndür
-        return title != null ? title : name;
-    }
-
-    public String getPosterPath() {
-        return posterPath;
-    }
-
-    public double getVoteAverage() {
-        return voteAverage;
-    }
-
-    // Film mi dizi mi kontrolü (DetailActivity için)
-    public boolean isMovie() {
-        return title != null;
-    }
+    public int getId() { return id; }
+    public String getTitle() { return title != null ? title : name; }
+    public String getPosterPath() { return posterPath; }
+    public double getVoteAverage() { return voteAverage; }
+    public String getImdbId() { return imdbId; } // YENİ EKLENDİ
+    public boolean isMovie() { return title != null; }
 }

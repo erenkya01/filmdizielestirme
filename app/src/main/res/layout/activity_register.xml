@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#121212"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Yeni Hesap Oluştur"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="24dp"/>
+
+        <EditText
+            android:id="@+id/edit_reg_first_name"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:background="@drawable/custom_score_bg"
+            android:hint="İsim (Adınız)"
+            android:textColorHint="#888888"
+            android:textColor="#FFFFFF"
+            android:paddingStart="16dp"
+            android:inputType="textPersonName"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
+            android:id="@+id/edit_reg_last_name"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:background="@drawable/custom_score_bg"
+            android:hint="Soyisim (Soyadınız)"
+            android:textColorHint="#888888"
+            android:textColor="#FFFFFF"
+            android:paddingStart="16dp"
+            android:inputType="textPersonName"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
+            android:id="@+id/edit_reg_username"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:background="@drawable/custom_score_bg"
+            android:hint="Kullanıcı Adı"
+            android:textColorHint="#888888"
+            android:textColor="#FFFFFF"
+            android:paddingStart="16dp"
+            android:inputType="text"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
+            android:id="@+id/edit_reg_dob"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:background="@drawable/custom_score_bg"
+            android:hint="Doğum Tarihi (Gün/Ay/Yıl)"
+            android:textColorHint="#888888"
+            android:textColor="#FFFFFF"
+            android:paddingStart="16dp"
+            android:inputType="date"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
+            android:id="@+id/edit_reg_email"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:background="@drawable/custom_score_bg"
+            android:hint="E-posta adresiniz"
+            android:textColorHint="#888888"
+            android:textColor="#FFFFFF"
+            android:paddingStart="16dp"
+            android:inputType="textEmailAddress"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
+            android:id="@+id/edit_reg_password"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:background="@drawable/custom_score_bg"
+            android:hint="Şifreniz"
+            android:textColorHint="#888888"
+            android:textColor="#FFFFFF"
+            android:paddingStart="16dp"
+            android:inputType="textPassword"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
+            android:id="@+id/edit_reg_password_confirm"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:background="@drawable/custom_score_bg"
+            android:hint="Şifrenizi Tekrar Girin"
+            android:textColorHint="#888888"
+            android:textColor="#FFFFFF"
+            android:paddingStart="16dp"
+            android:inputType="textPassword"
+            android:layout_marginBottom="24dp"/>
+
+        <Button
+            android:id="@+id/btn_register"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="Kayıt Ol"
+            android:backgroundTint="#E91E63"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"/>
+    </LinearLayout>
+</ScrollView>

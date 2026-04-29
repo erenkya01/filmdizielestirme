@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -47,6 +48,14 @@ dependencies {
     // API'den veri çekmek için Retrofit ve Gson motorları
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    // Firebase BoM (Sürümleri otomatik yönetir)
+    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
+
+    // Firebase Authentication (Giriş/Kayıt için)
+    implementation("com.google.firebase:firebase-auth")
+
+    // Firebase Firestore (İleride favorileri kaydetmek için şimdiden ekleyelim)
+    implementation("com.google.firebase:firebase-firestore")
 
     // İnternetten resim (afiş) indirmek için Glide motoru
     implementation("com.github.bumptech.glide:glide:4.16.0")
