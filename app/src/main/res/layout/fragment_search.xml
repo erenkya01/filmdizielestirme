@@ -5,11 +5,40 @@
     android:orientation="vertical"
     android:background="#121212">
 
+    <!-- YENİ: Film ve Oyun Sekmeleri -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/btn_search_movie"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Film ve Dizi"
+            android:backgroundTint="#E91E63"
+            android:textColor="#FFFFFF"
+            android:layout_marginEnd="8dp"/>
+
+        <Button
+            android:id="@+id/btn_search_game"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Oyunlar"
+            android:backgroundTint="#1E1E1E"
+            android:textColor="#FFFFFF"/>
+    </LinearLayout>
+
     <EditText
         android:id="@+id/edit_live_search"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_margin="16dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="16dp"
         android:background="@drawable/custom_score_bg"
         android:hint="Film veya dizi ara (En az 2 harf)..."
         android:paddingStart="16dp"
@@ -34,5 +63,4 @@
         android:layout_height="match_parent"
         android:padding="8dp"
         android:clipToPadding="false" />
-
 </LinearLayout>

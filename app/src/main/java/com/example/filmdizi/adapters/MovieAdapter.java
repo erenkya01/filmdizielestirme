@@ -43,7 +43,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             intent.putExtra("title", item.getTitle());
             intent.putExtra("poster", finalUrl);
             intent.putExtra("vote", item.getVoteAverage());
-            intent.putExtra("isMovie", item.isMovie()); // Kritik Bilgi
+            intent.putExtra("isMovie", item.isMovie());
+            intent.putExtra("isGame", item.isGame()); // KRİTİK YENİLİK BURADA
             v.getContext().startActivity(intent);
         });
     }

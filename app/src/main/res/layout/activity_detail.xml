@@ -10,15 +10,18 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- Afiş ve Başlık -->
         <FrameLayout android:layout_width="match_parent" android:layout_height="400dp">
             <ImageView android:id="@+id/detail_image" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="centerCrop" />
             <View android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/gradient_overlay" />
             <TextView android:id="@+id/detail_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="bottom|start" android:layout_margin="20dp" android:textColor="#FFFFFF" android:textSize="28sp" android:textStyle="bold" />
         </FrameLayout>
 
+        <!-- Puanlama Alanı -->
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:padding="16dp" android:gravity="center">
             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="IMDb" android:textColor="#F5C518" android:textStyle="bold"/>
+                <!-- YENİ: ID eklendi (text_score_type) -->
+                <TextView android:id="@+id/text_score_type" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="IMDb" android:textColor="#F5C518" android:textStyle="bold"/>
                 <TextView android:id="@+id/text_imdb" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#FFF" android:textSize="18sp"/>
             </LinearLayout>
             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1.5" android:background="@drawable/custom_score_bg" android:padding="8dp" android:gravity="center" android:orientation="vertical">
@@ -27,13 +30,13 @@
             </LinearLayout>
         </LinearLayout>
 
+        <!-- Butonlar -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="16dp"
             android:gravity="center">
-
             <Button
                 android:id="@+id/btn_watch"
                 android:layout_width="0dp"
@@ -43,7 +46,6 @@
                 android:backgroundTint="#E91E63"
                 android:layout_marginEnd="8dp"
                 android:textColor="#FFF"/>
-
             <Button
                 android:id="@+id/btn_favorite"
                 android:layout_width="0dp"
@@ -54,10 +56,13 @@
                 android:textColor="#FFF"/>
         </LinearLayout>
 
+        <!-- Sezonlar ve Bölümler (Sadece Dizilerde Görünür) -->
         <TextView android:id="@+id/text_season_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sezon Seçin" android:textColor="#AAAAAA" android:layout_marginStart="16dp" />
         <Spinner android:id="@+id/spinner_seasons" android:layout_width="match_parent" android:layout_height="48dp" android:layout_margin="16dp" android:backgroundTint="#E91E63" />
         <TextView android:id="@+id/text_episodes_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Bölümler ve Puanlar" android:textColor="#FFFFFF" android:textSize="18sp" android:layout_marginStart="16dp" android:textStyle="bold" />
+
         <androidx.recyclerview.widget.RecyclerView android:id="@+id/recycler_episodes" android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="16dp" android:nestedScrollingEnabled="false" />
+
         <View android:layout_width="match_parent" android:layout_height="50dp" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

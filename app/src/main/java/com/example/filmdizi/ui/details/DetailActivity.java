@@ -1,9 +1,7 @@
 package com.example.filmdizi.ui.details;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,10 +27,10 @@ import com.example.filmdizi.models.TvExternalIdsResponse;
 import com.example.filmdizi.models.TvShowDetailResponse;
 import com.example.filmdizi.network.ApiClient;
 import com.example.filmdizi.network.TmdbApiService;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,16 +41,17 @@ import retrofit2.Response;
 public class DetailActivity extends AppCompatActivity {
 
     private ImageView imageView;
-    private TextView titleView, imdbScoreView, seasonTitle, episodesTitle;
+    private TextView titleView, imdbScoreView, seasonTitle, episodesTitle, textScoreType;
     private Spinner spinnerSeasons;
     private RecyclerView recyclerEpisodes;
     private Button btnWatch, btnFavorite;
+
     private EpisodeAdapter episodeAdapter;
     private List<Episode> episodeList = new ArrayList<>();
-
     private final String API_KEY = "9a8b276e5a73bf376fdfba9de1ba4b60";
-    private String currentImdbId = ""; // İzleme linki için
-    private Movie currentItemModel; // Favoriye kaydetmek için
+
+    private String currentImdbId = "";
+    private Movie currentItemModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +61,7 @@ public class DetailActivity extends AppCompatActivity {
         imageView = findViewById(R.id.detail_image);
         titleView = findViewById(R.id.detail_title);
         imdbScoreView = findViewById(R.id.text_imdb);
+        textScoreType = findViewById(R.id.text_score_type); // YENİ
         spinnerSeasons = findViewById(R.id.spinner_seasons);
         recyclerEpisodes = findViewById(R.id.recycler_episodes);
         seasonTitle = findViewById(R.id.text_season_title);
@@ -73,50 +73,58 @@ public class DetailActivity extends AppCompatActivity {
         recyclerEpisodes.setLayoutManager(new LinearLayoutManager(this));
         recyclerEpisodes.setAdapter(episodeAdapter);
 
+        // Gelen Verileri Alıyoruz
         int id = getIntent().getIntExtra("id", -1);
         boolean isMovie = getIntent().getBooleanExtra("isMovie", false);
+        boolean isGame = getIntent().getBooleanExtra("isGame", false); // Oyun mu?
         String title = getIntent().getStringExtra("title");
         String poster = getIntent().getStringExtra("poster");
         double vote = getIntent().getDoubleExtra("vote", 0.0);
 
-        // Favoriye eklenecek nesneyi oluşturuyoruz
         currentItemModel = new Movie(title, poster, vote);
 
         titleView.setText(title);
         imdbScoreView.setText(String.format("%.1f", vote));
         Glide.with(this).load(poster).into(imageView);
 
-        // IMDb ID'yi Çek
-        fetchImdbId(id, isMovie);
+        // UI MANTIĞI: Oyun mu, Film/Dizi mi?
+        if (isGame) {
+            // OYUN İSE:
+            btnWatch.setVisibility(View.GONE); // İzle butonunu gizle
+            textScoreType.setText("RAWG Puanı"); // IMDb yerine RAWG Puanı yaz
 
-        if (isMovie || id == -1) {
             spinnerSeasons.setVisibility(View.GONE);
             seasonTitle.setVisibility(View.GONE);
             episodesTitle.setVisibility(View.GONE);
             recyclerEpisodes.setVisibility(View.GONE);
         } else {
-            fetchTvDetails(id);
+            // FİLM VEYA DİZİ İSE:
+            fetchImdbId(id, isMovie);
+
+            if (isMovie || id == -1) {
+                spinnerSeasons.setVisibility(View.GONE);
+                seasonTitle.setVisibility(View.GONE);
+                episodesTitle.setVisibility(View.GONE);
+                recyclerEpisodes.setVisibility(View.GONE);
+            } else {
+                fetchTvDetails(id);
+            }
         }
 
-        // İZLE BUTONU
+        // İZLE BUTONU (Sadece filmler ve diziler için görünür)
         btnWatch.setOnClickListener(v -> {
             if (!currentImdbId.isEmpty()) {
                 String url = "https://www.playimdb.com/title/" + currentImdbId + "/";
-
-                // Artık browser'a değil, kendi PlayerActivity'mize gidiyoruz
                 Intent intent = new Intent(DetailActivity.this, PlayerActivity.class);
                 intent.putExtra("VIDEO_URL", url);
                 startActivity(intent);
-
             } else {
-                Toast.makeText(this, "Link hazırlanıyor, lütfen bekleyin...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Link hazırlanıyor veya bulunamadı...", Toast.LENGTH_SHORT).show();
             }
         });
 
-        // FAVORİ BUTONU
-        btnFavorite.setOnClickListener(v -> {
-            saveToFavorites(currentItemModel);
-        });
+        // FAVORİLERE EKLE BUTONU (Firestore'a yazar)
+        btnFavorite.setOnClickListener(v -> saveToFavorites(currentItemModel));
     }
 
     private void fetchImdbId(int id, boolean isMovie) {
@@ -145,31 +153,25 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void saveToFavorites(Movie movie) {
-        SharedPreferences prefs = getSharedPreferences("MyFavorites", MODE_PRIVATE);
-        Gson gson = new Gson();
-        String json = prefs.getString("favList", null);
-        Type type = new TypeToken<ArrayList<Movie>>() {}.getType();
-        List<Movie> favList = gson.fromJson(json, type);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        if (favList == null) {
-            favList = new ArrayList<>();
-        }
+        if (user != null) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Zaten ekli mi diye basit bir kontrol
-        boolean isExist = false;
-        for (Movie m : favList) {
-            if (m.getTitle().equals(movie.getTitle())) {
-                isExist = true; break;
-            }
-        }
+            // Veritabanı dosya ismi hata vermesin diye / gibi karakterleri temizliyoruz
+            String docId = movie.getTitle().replace("/", "_");
 
-        if (!isExist) {
-            favList.add(movie);
-            String newJson = gson.toJson(favList);
-            prefs.edit().putString("favList", newJson).apply();
-            Toast.makeText(this, "Favorilere eklendi!", Toast.LENGTH_SHORT).show();
+            db.collection("Users").document(user.getUid())
+                    .collection("Favorites").document(docId)
+                    .set(movie)
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(this, "Favorilere eklendi!", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "Hata: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
         } else {
-            Toast.makeText(this, "Bu zaten favorilerinizde!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Favoriye eklemek için giriş yapmalısınız!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -202,6 +204,7 @@ public class DetailActivity extends AppCompatActivity {
                 tv.setTextColor(Color.WHITE); tv.setBackgroundColor(Color.parseColor("#1E1E1E")); return tv;
             }
         };
+
         spinnerSeasons.setAdapter(adapter);
         spinnerSeasons.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

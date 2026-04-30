@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -13,34 +15,73 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.filmdizi.R;
 import com.example.filmdizi.adapters.MovieAdapter;
 import com.example.filmdizi.models.Movie;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileFragment extends Fragment {
 
-    private RecyclerView recyclerRatedItems;
+    private RecyclerView recyclerItems;
+    private Button btnFavorites, btnRated;
+    private TextView textProfileEmail;
+
+    private FirebaseFirestore db;
+    private FirebaseUser currentUser;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        recyclerRatedItems = view.findViewById(R.id.recycler_rated_items);
+        recyclerItems = view.findViewById(R.id.recycler_rated_items);
+        btnFavorites = view.findViewById(R.id.btn_tab_favorites);
+        btnRated = view.findViewById(R.id.btn_tab_rated);
+        textProfileEmail = view.findViewById(R.id.text_profile_email);
 
-        // Puanladıklarım listesini 2 sütunlu Izgara (Grid) şeklinde ayarlıyoruz
-        recyclerRatedItems.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        db = FirebaseFirestore.getInstance();
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        // Puanladığın içeriklerin yerel (dummy) listesi
-        List<Movie> ratedList = new ArrayList<>();
-        ratedList.add(new Movie("Interstellar", "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MvrIdZ2O.jpg", 9.5));
-        ratedList.add(new Movie("The Last of Us", "https://image.tmdb.org/t/p/w500/u3bZgnGQ9T01sWNhyveQz0wH0Hl.jpg", 9.8));
-        ratedList.add(new Movie("The Matrix", "https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg", 8.8));
-        ratedList.add(new Movie("Red Dead Redemption 2", "https://image.tmdb.org/t/p/w500/uF5jExT4Knb0LqO6jU6G4K6K4rF.jpg", 10.0));
+        recyclerItems.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
-        // Aynı MovieAdapter'ı burada da kullanarak kod tasarrufu yapıyoruz
-        recyclerRatedItems.setAdapter(new MovieAdapter(ratedList));
+        if(currentUser != null && currentUser.getEmail() != null) {
+            textProfileEmail.setText(currentUser.getEmail());
+        }
+
+        // Sayfa açıldığında otomatik Favorileri Getir
+        fetchFavoritesFromCloud();
+
+        btnFavorites.setOnClickListener(v -> {
+            btnFavorites.setBackgroundColor(android.graphics.Color.parseColor("#E91E63"));
+            btnRated.setBackgroundColor(android.graphics.Color.parseColor("#1E1E1E"));
+            fetchFavoritesFromCloud();
+        });
+
+        btnRated.setOnClickListener(v -> {
+            btnRated.setBackgroundColor(android.graphics.Color.parseColor("#E91E63"));
+            btnFavorites.setBackgroundColor(android.graphics.Color.parseColor("#1E1E1E"));
+            // Şimdilik burası boş
+            recyclerItems.setAdapter(new MovieAdapter(new ArrayList<>()));
+        });
 
         return view;
+    }
+
+    private void fetchFavoritesFromCloud() {
+        if (currentUser != null) {
+            db.collection("Users").document(currentUser.getUid()).collection("Favorites")
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        List<Movie> favList = new ArrayList<>();
+                        for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                            Movie movie = doc.toObject(Movie.class);
+                            favList.add(movie);
+                        }
+                        recyclerItems.setAdapter(new MovieAdapter(favList));
+                    });
+        }
     }
 }
