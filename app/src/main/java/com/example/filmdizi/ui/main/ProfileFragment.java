@@ -63,8 +63,9 @@ public class ProfileFragment extends Fragment {
         btnRated.setOnClickListener(v -> {
             btnRated.setBackgroundColor(android.graphics.Color.parseColor("#E91E63"));
             btnFavorites.setBackgroundColor(android.graphics.Color.parseColor("#1E1E1E"));
-            // Şimdilik burası boş
-            recyclerItems.setAdapter(new MovieAdapter(new ArrayList<>()));
+
+            // YENİ EKLENEN: Puanlananları Çek
+            fetchRatedFromCloud();
         });
 
         return view;
@@ -81,6 +82,21 @@ public class ProfileFragment extends Fragment {
                             favList.add(movie);
                         }
                         recyclerItems.setAdapter(new MovieAdapter(favList));
+                    });
+        }
+    }
+    private void fetchRatedFromCloud() {
+        if (currentUser != null) {
+            db.collection("Users").document(currentUser.getUid()).collection("Rated")
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        List<Movie> ratedList = new ArrayList<>();
+                        for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                            Movie movie = doc.toObject(Movie.class);
+                            ratedList.add(movie);
+                        }
+                        // Puanladıklarımızı ekrana basıyoruz
+                        recyclerItems.setAdapter(new MovieAdapter(ratedList));
                     });
         }
     }

@@ -1,5 +1,5 @@
 package com.example.filmdizi.ui.details;
-
+import android.widget.RatingBar;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -59,6 +59,7 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
 
         imageView = findViewById(R.id.detail_image);
+        ImageView imageBg = findViewById(R.id.detail_image_bg);
         titleView = findViewById(R.id.detail_title);
         imdbScoreView = findViewById(R.id.text_imdb);
         textScoreType = findViewById(R.id.text_score_type); // YENİ
@@ -86,6 +87,7 @@ public class DetailActivity extends AppCompatActivity {
         titleView.setText(title);
         imdbScoreView.setText(String.format("%.1f", vote));
         Glide.with(this).load(poster).into(imageView);
+        Glide.with(this).load(poster).into(imageBg);
 
         // UI MANTIĞI: Oyun mu, Film/Dizi mi?
         if (isGame) {
@@ -125,6 +127,32 @@ public class DetailActivity extends AppCompatActivity {
 
         // FAVORİLERE EKLE BUTONU (Firestore'a yazar)
         btnFavorite.setOnClickListener(v -> saveToFavorites(currentItemModel));
+        // --- PUANLAMA (RATING) MANTIĞI ---
+        RatingBar ratingBar = findViewById(R.id.user_rating_bar);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // 1. Kullanıcı sayfaya girdiğinde daha önce puan vermişse o puanı yıldızlarda göster
+        if (user != null) {
+            String docId = currentItemModel.getTitle().replace("/", "_");
+            db.collection("Users").document(user.getUid())
+                    .collection("Rated").document(docId)
+                    .get().addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            Double savedRating = documentSnapshot.getDouble("userRating");
+                            if (savedRating != null) {
+                                ratingBar.setRating(savedRating.floatValue());
+                            }
+                        }
+                    });
+        }
+
+        // 2. Kullanıcı yeni puan verdiğinde bunu buluta kaydet
+        ratingBar.setOnRatingBarChangeListener((bar, rating, fromUser) -> {
+            if (fromUser) {
+                saveRatingToCloud(currentItemModel, rating);
+            }
+        });
     }
 
     private void fetchImdbId(int id, boolean isMovie) {
@@ -172,6 +200,28 @@ public class DetailActivity extends AppCompatActivity {
                     });
         } else {
             Toast.makeText(this, "Favoriye eklemek için giriş yapmalısınız!", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private void saveRatingToCloud(Movie movie, float rating) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            String docId = movie.getTitle().replace("/", "_");
+
+            // Hem filmi kaydediyoruz (Profilde göstermek için) hem de verilen puanı ekliyoruz
+            db.collection("Users").document(user.getUid())
+                    .collection("Rated").document(docId)
+                    .set(movie)
+                    .addOnSuccessListener(aVoid -> {
+                        // Film objesi kaydedildikten sonra "userRating" alanını da yanına ekliyoruz
+                        db.collection("Users").document(user.getUid())
+                                .collection("Rated").document(docId)
+                                .update("userRating", rating);
+
+                        Toast.makeText(this, "Puanınız kaydedildi: " + rating, Toast.LENGTH_SHORT).show();
+                    });
+        } else {
+            Toast.makeText(this, "Puan vermek için giriş yapmalısınız!", Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -10,23 +10,63 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Afiş ve Başlık -->
-        <FrameLayout android:layout_width="match_parent" android:layout_height="400dp">
-            <ImageView android:id="@+id/detail_image" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="centerCrop" />
+        <!-- Afiş ve Başlık (PREMIUM TASARIM - Çift Katman) -->
+        <FrameLayout android:layout_width="match_parent" android:layout_height="400dp" android:background="#000000">
+            <!-- Arka Plan Görseli -->
+            <ImageView
+                android:id="@+id/detail_image_bg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:alpha="0.3" />
+
+            <!-- Ön Plan Net Görsel -->
+            <ImageView
+                android:id="@+id/detail_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="70dp"
+                android:scaleType="fitCenter" />
+
             <View android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/gradient_overlay" />
-            <TextView android:id="@+id/detail_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="bottom|start" android:layout_margin="20dp" android:textColor="#FFFFFF" android:textSize="28sp" android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/detail_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_margin="20dp"
+                android:textColor="#FFFFFF"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:gravity="center" />
         </FrameLayout>
 
         <!-- Puanlama Alanı -->
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:padding="16dp" android:gravity="center">
+
+            <!-- Silinen o meşhur alan burasıydı :) -->
             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:orientation="vertical">
-                <!-- YENİ: ID eklendi (text_score_type) -->
                 <TextView android:id="@+id/text_score_type" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="IMDb" android:textColor="#F5C518" android:textStyle="bold"/>
                 <TextView android:id="@+id/text_imdb" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#FFF" android:textSize="18sp"/>
             </LinearLayout>
+
             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1.5" android:background="@drawable/custom_score_bg" android:padding="8dp" android:gravity="center" android:orientation="vertical">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TOPLULUK PUANI" android:textColor="#E91E63" android:textSize="10sp" android:textStyle="bold"/>
-                <RatingBar android:id="@+id/user_rating_bar" style="?android:attr/ratingBarStyleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:numStars="5" android:progressTint="#E91E63"/>
+                <!-- Düzeltilmiş RatingBar -->
+                <RatingBar
+                    android:id="@+id/user_rating_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:numStars="5"
+                    android:stepSize="0.5"
+                    android:isIndicator="false"
+                    android:progressTint="#E91E63"
+                    android:progressBackgroundTint="#555555"
+                    android:scaleX="0.8"
+                    android:scaleY="0.8"
+                    android:layout_marginTop="4dp"/>
             </LinearLayout>
         </LinearLayout>
 
@@ -56,7 +96,7 @@
                 android:textColor="#FFF"/>
         </LinearLayout>
 
-        <!-- Sezonlar ve Bölümler (Sadece Dizilerde Görünür) -->
+        <!-- Sezonlar ve Bölümler -->
         <TextView android:id="@+id/text_season_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sezon Seçin" android:textColor="#AAAAAA" android:layout_marginStart="16dp" />
         <Spinner android:id="@+id/spinner_seasons" android:layout_width="match_parent" android:layout_height="48dp" android:layout_margin="16dp" android:backgroundTint="#E91E63" />
         <TextView android:id="@+id/text_episodes_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Bölümler ve Puanlar" android:textColor="#FFFFFF" android:textSize="18sp" android:layout_marginStart="16dp" android:textStyle="bold" />
